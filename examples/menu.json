@@ -1,0 +1,57 @@
+[
+  {
+    "label": "System",
+    "menu": [
+      {
+        "label": "Test",
+        "emit": {
+          "name": "text",
+          "arguments": ["Test item selected."]
+        }
+      },
+      {
+        "label": "Date",
+        "command": "date",
+        "emit": "show_date"
+      },
+      {
+        "label": "Shutdown",
+        "emit": "shutdown"
+      }
+    ]
+  },
+  {
+    "label": "LEVEL1",
+    "menu": [
+      {
+        "label": "One",
+        "emit": {
+          "name": "text",
+          "arguments": ["Level 1 One."]
+        }
+      },
+      {
+        "label": "Two",
+        "emit": {
+          "name": "text",
+          "arguments": ["Level 1 Two."]
+        }
+      },
+      {
+        "label": "Three",
+        "emit": {
+          "name": "text",
+          "arguments": ["Level 1 Three."]
+        }
+      }
+    ]
+  },
+  {
+    "label": "Level2",
+    "menuFile": "./level2.json"
+  },
+  {
+    "label": "Exit",
+    "emit": "exit"
+  }
+]

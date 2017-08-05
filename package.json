@@ -1,0 +1,22 @@
+{
+  "name": "menube",
+  "version": "1.0.0",
+  "description": "Programmable menu backend.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bnielsen1965/menube.git"
+  },
+  "keywords": [
+    "menu",
+    "backend",
+    "json",
+    "exec",
+    "command"
+  ],
+  "author": "Bryan Nielsen <bnielsen1965@gmail.com> (https://github.com/bnielsen1965)",
+  "license": "MIT"
+}

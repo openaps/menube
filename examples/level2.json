@@ -1,0 +1,16 @@
+[
+  {
+    "label": "L2-1",
+    "emit": {
+      "name": "text",
+      "arguments": ["Level 2 One."]
+    }
+  },
+  {
+    "label": "L2-2",
+    "emit": {
+      "name": "text",
+      "arguments": ["Level 2 Two."]
+    }
+  }
+]
