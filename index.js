@@ -40,13 +40,15 @@ module.exports = function (menuFile) {
     if (s.menu && s.menu.length) {
       // submenu selected
       currentSelect.push(0);
+      emitter.emit('menu_changed');
     }
     else if (s.command) {
       // shell command selected
-      require('child_process').exec(s.command, (err, stdout, stderr) => {
+      require('child_process').exec(s.command, function (err, stdout, stderr) {
         if (s.emit) {
           emitter.emit(s.emit, err, stdout, stderr);
         }
+        emitter.emit('menu_command');
       });
     }
     else if (s.emit) {
@@ -64,6 +66,7 @@ module.exports = function (menuFile) {
         }
       }
       emitter.emit.apply(emitter, args);
+      emitter.emit('menu_emit');
     }
   }
 
@@ -71,7 +74,10 @@ module.exports = function (menuFile) {
   function menuBack() {
     if (currentSelect.length > 1) {
       currentSelect.pop();
+      emitter.emit('menu_changed');
+      return true;
     }
+    return false;
   }
 
   // move menu selection up through menu
@@ -79,8 +85,11 @@ module.exports = function (menuFile) {
     var i = currentSelect[currentSelect.length - 1] - 1;
     if (i < 0) {
       i = 0;
+      return false;
     }
     currentSelect[currentSelect.length - 1] = i;
+    emitter.emit('menu_changed');
+    return true;
   }
 
   // move menu selection down through menu
@@ -88,8 +97,11 @@ module.exports = function (menuFile) {
     var i = currentSelect[currentSelect.length - 1] + 1;
     if (i >= getActiveMenu().length) {
       i -= 1;
+      return false;
     }
     currentSelect[currentSelect.length - 1] = i;
+    emitter.emit('menu_changed');
+    return true;
   }
 
   // get active menu branch

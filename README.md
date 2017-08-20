@@ -176,16 +176,50 @@ The application user interface calls the menuDown() method when a user selects
 the next menu item. This will update the currently selected menu item in the
 active menu branch.
 
+Returns true if menu changed, false if no change because menu selection is already
+at the bottom of a branch.
+
 
 ### menuUp()
 The application user interface calls the menuUp() method to move the menu
 selection to the previous item in the active menu branch.
+
+Returns true if menu changed, false if no change because menu selection is already
+at the top of a branch.
 
 
 ### menuBack()
 When in a sub-menu the menuBack() method will take menube back one menu branch
 and will change the current item selection to the item which led to the sub-menu.
 
+Returns true if menu changed, false if no change because menu selection is already
+at the menu root.
+
 
 ### activateSelect()
 Maybe need a better name for this method.
+
+
+## Events
+
+In addition to any events that may be emitted by an activated menu selection as
+defined in the menu definition, the menu itself has some events that it will
+emit as the menu changes.
+
+
+### 'menu_changed'
+
+Any action that results in a change to the menu, i.e. selecting a new menu branch
+or change the current menu item selection, will result in a 'menu_changed' event.
+
+
+### 'menu_command'
+
+If an activated menu item executes a command then a 'menu_command' event will be
+emitted along with any events that are created by the command.
+
+
+### 'menu_emit'
+
+Activated menu items that are defined as event emitters will also result in the
+'menu_emit' event.
