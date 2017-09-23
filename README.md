@@ -103,6 +103,9 @@ definition includes an "emit" property with the name of the event to be emitted
 then an event will be emitted with the error, stdout, and stderr values resulting
 from the shell command.
 
+NOTE: Shell commands that are bash scripts must be executable. Use chmod a+x on
+a shell script to make it executable.
+
 The following example is a menu item "Date" that when selected will execute the
 date command with the results delivered through an event named "show_date".
 ```json
@@ -128,7 +131,7 @@ Emit an event. This menu item will emit an event when selected. The emit may be
 defined as a string with the event name or as an object with the event name and
 an array of arguments for a more complex event.
 
-A simple event with no arguements may look like the following...
+A simple event with no arguments may look like the following...
 ```json
 {
   "label": "Shutdown",
@@ -151,6 +154,34 @@ A listener for the previous example may look something like the following...
 ```javascript
 menu.on('text', function (txt) {
   console.log('TEXT: ', txt);
+});
+```
+
+
+### options
+Create a dynamic list of items from which the user can select. The items are
+generated from a provided shell command and the selected item will be submitted
+to a provided select script. The results of the select script can then be emitted in the
+same way a command item emits results.
+
+NOTE: Shell commands that are bash scripts must be executable. Use chmod a+x on
+a shell script to make it executable.
+
+The following example is an access point selection menu item. The getaps.sh script
+returns a list of access point names in
+```json
+{
+  "label": "Select AP",
+  "options": "./scripts/getaps.sh",
+  "selectScript": "./scripts/selectap.sh",
+  "selectEmit": "showoutput"
+}
+```
+Assuming a menu was created with the previous menu item, a listener that displays
+the output from the selectap.sh script may look like the following...
+```javascript
+menu.on('showoutput', function (message) {
+  console.log('Select AP Message: ', message);
 });
 ```
 

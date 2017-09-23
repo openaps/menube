@@ -7,6 +7,15 @@ module.exports = function (menuFile) {
   var activeMenu = menu; // reference to active menu branch
   var currentSelect = [0]; // index of currently selected menu items
 
+  // Notes on currentSelect:
+  // The currentSelect array keeps track of both the currently selected menu item
+  // and the branch. The integer is the selected item and the depth of the array
+  // is the point out on a branch.
+  // I.E. The first element in currentSelect is an integer of the selected item
+  // in the root branch. Assuming the selected item is a submenu then activating
+  // this item will push a new integer onto the currentSelect array with the new
+  // integer being the item selected within the submenu.
+
   // load the menu json file with recursive calls if needed
   function loadMenu(menuFile) {
     // load the menu file json
@@ -34,14 +43,20 @@ module.exports = function (menuFile) {
     return menu;
   }
 
+
   // activate the selected menu item
   function activateSelect() {
     var s = getCurrentSelect();
+
+    // submenu
     if (s.menu && s.menu.length) {
+      console.log('IS MENU: ', s.menu)
       // submenu selected
       currentSelect.push(0);
       emitter.emit('menu_changed');
     }
+
+    // execute command
     else if (s.command) {
       // shell command selected
       require('child_process').exec(s.command, function (err, stdout, stderr) {
@@ -51,6 +66,8 @@ module.exports = function (menuFile) {
         emitter.emit('menu_command');
       });
     }
+
+    // emit event
     else if (s.emit) {
       // emit event selected
       var args = [];
@@ -68,17 +85,67 @@ module.exports = function (menuFile) {
       emitter.emit.apply(emitter, args);
       emitter.emit('menu_emit');
     }
+
+    // dynamic options menu item from script
+    else if (s.options) {
+      // shell command to get options
+      require('child_process').exec(s.options, function (err, stdout, stderr) {
+        var options = stdout.split("\n");
+        var optionsMenu = [];
+        options.forEach(function (option) {
+          if (option.length) {
+            optionsMenu.push({ label: option, optionsItem: true });
+          }
+        })
+        // splice in the options at our options item
+        var am = getActiveMenu();
+        am.splice(currentSelect[currentSelect.length - 1], 0, {
+          label: s.label,
+          selectScript: s.selectScript,
+          emit: s.selectEmit,
+          menu: optionsMenu,
+          optionsMenu: true
+        });
+        activateSelect();
+      });
+    }
+
+    // options item selected
+    else if (s.optionsItem) {
+      var cs = getCurrentSelect();
+      var ps = getParentSelect();
+      _menuBack();
+      require('child_process').exec(ps.selectScript + ' ' + cs.label, function (err, stdout, stderr) {
+        if (ps.emit) {
+          emitter.emit(ps.emit, err, stdout, stderr);
+        }
+        emitter.emit('menu_command');
+      });
+    }
   }
+
 
   // move menu selection back from sub-menu
   function menuBack() {
     if (currentSelect.length > 1) {
-      currentSelect.pop();
+      _menuBack();
       emitter.emit('menu_changed');
       return true;
     }
     return false;
   }
+
+
+  function _menuBack() {
+    var ps = getParentSelect();
+    currentSelect.pop();
+    if (ps.optionsMenu) {
+      // clean up dynamic options menu
+      var am = getActiveMenu();
+      am.splice(currentSelect[currentSelect.length -1], 1);
+    }
+  }
+
 
   // move menu selection up through menu
   function menuUp() {
@@ -92,6 +159,7 @@ module.exports = function (menuFile) {
     return true;
   }
 
+
   // move menu selection down through menu
   function menuDown() {
     var i = currentSelect[currentSelect.length - 1] + 1;
@@ -104,12 +172,14 @@ module.exports = function (menuFile) {
     return true;
   }
 
+
   // get active menu branch
   function getActiveMenu() {
     return currentSelect.reduce(function (cur, val, ci) {
       return (ci + 1 < currentSelect.length ? cur.menu[val] : cur.menu);
     }, {menu: menu});
   }
+
 
   // get the parent selected menu item
   function getParentSelect() {
@@ -129,10 +199,12 @@ module.exports = function (menuFile) {
     }, {menu: menu});
   }
 
+
   // get the currently selected menu item
   function getCurrentSelect() {
     return getActiveMenu()[currentSelect[currentSelect.length - 1]];
   }
+
 
   // export functions
   emitter.menuUp = menuUp;

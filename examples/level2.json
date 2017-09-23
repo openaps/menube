@@ -1,5 +1,11 @@
 [
   {
+    "label": "Options",
+    "options": "./options.sh",
+    "selectScript": "./selected.sh",
+    "selectEmit": "selected"
+  },
+  {
     "label": "L2-1",
     "emit": {
       "name": "text",

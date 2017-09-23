@@ -11,6 +11,10 @@ var menu = require('../index.js')(path.resolve(__dirname, 'menu.json'));
 
 // add listeners to menu
 menu
+.on('menu_changed', function () {
+  // show a fresh menu any time the menu changes
+  showMenu();
+})
 .on('text', function (txt) {
   console.log('EVENT text: ', txt);
 })
@@ -27,6 +31,9 @@ menu
 .on('exit', function () {
   console.log('EVENT: exit');
   process.exit();
+})
+.on('selected', function (error, stdout, stderr) {
+  console.log(stdout);
 });
 
 // setup keyboard keypress listener
@@ -57,16 +64,13 @@ process.stdin.on('keypress', (str, key) => {
     process.exit();
     break;
   }
-
-  // reprint the menu after key press
-  showMenu();
 });
 
 
 // print out the active menu branch with the selected menu item marked
 function showMenu() {
   var p = menu.getParentSelect();
-  console.log('\r\n--- Menu' + (p ? ' (' + p.label + ')' : '') + ' ---');
+  console.log('\r\n\r\n--- Menu' + (p ? ' (' + p.label + ')' : '') + ' ---');
   var c = menu.getCurrentSelect();
   menu.getActiveMenu().forEach(function (m) {
     // show menu item, add an asterisk is the item is currently selected
@@ -75,6 +79,7 @@ function showMenu() {
   console.log('------------');
 }
 
+// a little help message
 console.log('\r\n\r\nq to exit');
 console.log('Arrow keys to move through menu.');
 // show the menu the first time
