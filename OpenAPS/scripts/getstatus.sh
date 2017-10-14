@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BG=$( cat ~/myopenaps/monitor/glucose.json | jq .[0].glucose )
-touch -d "$(date -R -d @$(jq .[0].date/1000 ~/myopenaps/monitor/temp_basal.json))" ~/myopenaps/monitor/temp_basal.json
+touch -d "$(date -R -d @$(jq .[0].date/1000 ~/myopenaps/monitor/glucose.json))" ~/myopenaps/monitor/glucose.json
 BGTIME=$( ls -la ~/myopenaps/monitor/glucose.json | awk '{print $6,$7,$8}' )
 IOB=$( printf %.1f $(cat ~/myopenaps/monitor/iob.json | jq .[0].iob) )
 IOBTIME=$( ls -la ~/myopenaps/monitor/iob.json | awk '{print $6,$7,$8}' )
